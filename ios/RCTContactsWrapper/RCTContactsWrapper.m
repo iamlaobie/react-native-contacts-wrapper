@@ -131,8 +131,17 @@ RCT_EXPORT_METHOD(getEmail:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
        This could also be extended to return arrays of phone numbers, email addresses etc. instead of jsut first found
        */
       NSMutableDictionary *contactData = [self emptyContactDict];
+      NSString * regex = @"^[A-Za-z]*$";
+      NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+      BOOL result = [pred evaluateWithObject:contact.familyName];
+
+      NSString *fullName = @"";
+      if (result) {
+        fullName = [self getFullNameForFirst:contact.givenName middle:contact.middleName last:contact.familyName ];
+      } else {
+        fullName = [self getFullNameForFirst:contact.familyName middle:contact.middleName last:contact.givenName ];
+      }
       
-      NSString *fullName = [self getFullNameForFirst:contact.givenName middle:contact.middleName last:contact.familyName ];
       NSArray *phoneNos = contact.phoneNumbers;
       NSArray *emailAddresses = contact.emailAddresses;
       
