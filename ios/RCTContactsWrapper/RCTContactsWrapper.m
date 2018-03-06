@@ -199,7 +199,16 @@ RCT_EXPORT_METHOD(getEmail:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
       mNameObject = (__bridge NSString *) ABRecordCopyValue(person, kABPersonMiddleNameProperty);
       lNameObject = (__bridge NSString *) ABRecordCopyValue(person, kABPersonLastNameProperty);
       
-      NSString *fullName = [self getFullNameForFirst:fNameObject middle:mNameObject last:lNameObject];
+      NSString * regex = @"^[A-Za-z]*$";
+      NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+      BOOL result = [pred evaluateWithObject:fNameObject];
+    
+      NSString *fullName = @"";
+      if (result) {
+        fullName = [self getFullNameForFirst:fNameObject middle:mNameObject last:lNameObject];
+      } else {
+        fullName = [self getFullNameForFirst:lNameObject middle:mNameObject last:fNameObject];
+      }
       
       //Return full name
       [contactData setValue:fullName forKey:@"name"];
